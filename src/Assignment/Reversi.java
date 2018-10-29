@@ -5,6 +5,8 @@ Source File: Reversi.java
 BY: Wong Hiu Hong  IT114105  180104583
 */
 
+package Assignment;
+
 import java.util.Scanner;
 
 public class Reversi {
