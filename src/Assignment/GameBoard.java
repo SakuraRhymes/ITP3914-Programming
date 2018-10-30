@@ -2,6 +2,7 @@ package Assignment;
 
 public class GameBoard {
     private int[][] board;
+    private int player = 1;
 
     public GameBoard() {
         board = new int[6][6];
@@ -22,10 +23,6 @@ public class GameBoard {
     private boolean checkIsEmpty(int row, int column) {
         return (board[row][column] == 0);
     }
-
-//    private boolean checkValidMove(int row, int column){
-//
-//    }
 
     //Display the game board.
     public void drawGameBoard() {
@@ -55,8 +52,42 @@ public class GameBoard {
             return 0;
     }
 
-//    public void setPiece(int row,int column){
-//        if (checkWithinBorder(row,column) && checkIsEmpty(row,column))
-//
-//    }
+    public void setPiece(int row, int column) {
+        board[row][column] = player;
+    }
+
+    public void changePlayer() {
+        player *= -1;
+    }
+
+    public int[][] getValidMoveList() {
+        int opponent;
+        int[][] validList = new int[6][6];
+
+        if (player == 1)
+            opponent = 2;
+        else
+            opponent = 1;
+
+        //Loop though the board array
+        for (int row = 0; row < board.length; row++) {
+            for (int column = 0; column < board[row].length; column++) {
+
+                //Move in one direction, up to 5 blocks away
+                for (int i = 1; i < 6; i++) {
+                    if (checkWithinBorder(row - i, column)) {
+                        if (board[row - i][column] == opponent) {
+                            if (board[row - i - 1][column] == player) {
+                                validList[row][column] = 1;
+                                break;
+                            }
+                        } else
+                            break;
+                    } else
+                        break;
+                }
+            }
+        }
+        return validList;
+    }
 }

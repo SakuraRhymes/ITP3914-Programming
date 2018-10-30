@@ -17,7 +17,9 @@ public class Reversi {
         GameBoard GameBoard = new GameBoard();
 
         GameBoard.drawGameBoard();
+
     }
+
 
     //player variable indicate which player is ask to move next.
     //valid variable display a error message depend on its value.
