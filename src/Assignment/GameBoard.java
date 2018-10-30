@@ -59,6 +59,7 @@ public class GameBoard {
 
     public void setPiece(int row, int column) {
         board[row][column] = player;
+        flipPiece(row, column);
         changePlayer();
         drawGameBoard();
     }
@@ -81,6 +82,10 @@ public class GameBoard {
             return false;
         }
         return true;
+    }
+
+    private void flipPiece(int row, int column) {
+
     }
 
     private void changePlayer() {
