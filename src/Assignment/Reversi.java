@@ -14,14 +14,14 @@ public class Reversi {
         Scanner input = new Scanner(System.in);
 
         GameBoard GameBoard = new GameBoard();
-
         GameBoard.drawGameBoard();
+
         while (true) {
             GameBoard.askInput();
-            int row = input.nextInt();
-            int column = input.nextInt();
-            if (GameBoard.checkWrongInput(row, column))
-                GameBoard.setPiece(row, column);
+            if (GameBoard.setPiece(input.nextInt(), input.nextInt())) {
+                GameBoard.drawGameBoard();
+            }
+
         }
     }
 }
