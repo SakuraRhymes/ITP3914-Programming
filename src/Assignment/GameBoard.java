@@ -27,7 +27,7 @@ public class GameBoard {
         player1Pieces = 0;
         player2Pieces = 0;
 
-        //Game board size can vary
+        //Game board size can vary, up to 100x100
         board = new int[6][6];
 
         //Fill in the middle 4 pieces on the game board.
@@ -53,13 +53,13 @@ public class GameBoard {
     public void drawGameBoard() {
 
         //Print the first two lines
-        System.out.print("\n   ");
+        System.out.print("\n    ");
         for (int i = 0; i < board.length; i++)
             //Print column index
-            System.out.print(" " + i);
+            System.out.printf("%2d", i);
 
         //print the "-----" line according to board size
-        System.out.print("\n    -");
+        System.out.print("\n     -");
         for (int i = 1; i < board.length; i++) {
             System.out.print("--");
         }
@@ -68,7 +68,7 @@ public class GameBoard {
         for (int row = 0; row < board.length; row++) {
             System.out.println();
             //Print row index
-            System.out.print(row + " |");
+            System.out.printf("%2d |", row);
             for (int column = 0; column < board[row].length; column++)
                 System.out.print(" " + board[row][column]);
         }
@@ -236,7 +236,7 @@ public class GameBoard {
     private int[][] getValidMoveList() {
 
         //A array to store the valid move
-        int[][] validList = new int[6][6];
+        int[][] validList = new int[board.length][board[0].length];
 
         //Check through the game board array
         for (int row = 0; row < board.length; row++) {
