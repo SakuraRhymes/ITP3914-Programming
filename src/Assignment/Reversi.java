@@ -20,8 +20,9 @@ public class Reversi {
             GameBoard.askInput();
             if (GameBoard.setPiece(input.nextInt(), input.nextInt())) {
                 GameBoard.drawGameBoard();
+                if (GameBoard.checkGameStatus())
+                    break;
             }
-
         }
     }
 }

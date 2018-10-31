@@ -9,7 +9,6 @@ public class GameBoard {
     private int player2Pieces;
     private int skippedTurn;
 
-
     public GameBoard() {
         player = 1;
         opponent = 2;
@@ -42,7 +41,7 @@ public class GameBoard {
 
         //Print the first two lines
         System.out.print("   ");
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < board.length; i++)
             //Print column index
             System.out.print(" " + i);
         System.out.print("\n    -----------");
@@ -62,7 +61,7 @@ public class GameBoard {
     //Display a error message if a move is not valid or a turn is skipped
     public boolean setPiece(int row, int column) {
         if (!checkWithinBorder(row, column)) {
-            System.out.println("Error - input numbers should be 0 to 5!");
+            System.out.println("Error - input numbers should be 0 to " + (board.length - 1) + "!");
             return false;
         }
         if (!checkIsEmpty(row, column)) {
@@ -75,24 +74,14 @@ public class GameBoard {
         }
         board[row][column] = player;
         flipPiece(row, column);
-        checkGameStatus();
         changePlayer();
-        validList = getValidMoveList();
-
-        while (checkSkipTurn(validList)) {
-            changePlayer();
-            validList = getValidMoveList();
-            skippedTurn++;
-            if (skippedTurn == 2)
-                endGame();
-        }
-        skippedTurn = 0;
         return true;
     }
 
-    private void checkGameStatus() {
+    public boolean checkGameStatus() {
         player1Pieces = 0;
         player2Pieces = 0;
+        validList = getValidMoveList();
 
         for (int row = 0; row < board.length; row++)
             for (int column = 0; column < board[row].length; column++) {
@@ -101,8 +90,23 @@ public class GameBoard {
                 else if (board[row][column] == 2)
                     player2Pieces++;
             }
-        if (player1Pieces + player2Pieces == 36)
+
+        while (checkSkipTurn(validList)) {
+            changePlayer();
+            validList = getValidMoveList();
+            skippedTurn++;
+            if (skippedTurn == 2) {
+                endGame();
+                return true;
+            }
+        }
+        skippedTurn = 0;
+
+        if (player1Pieces + player2Pieces == (board.length * board[0].length)) {
             endGame();
+            return true;
+        }
+        return false;
     }
 
     private void endGame() {
@@ -110,9 +114,9 @@ public class GameBoard {
         System.out.println("\t'1' - " + player1Pieces);
         System.out.println("\t'2' - " + player2Pieces);
         if (player1Pieces > player2Pieces)
-            System.out.println("White wins.");
-        if (player1Pieces < player2Pieces)
             System.out.println("Black wins.");
+        if (player1Pieces < player2Pieces)
+            System.out.println("White wins.");
         else
             System.out.println("Drawn game.");
     }
@@ -137,145 +141,61 @@ public class GameBoard {
     }
 
     private void flipPiece(int row, int column) {
-        int[][] flipList;
+        int dir = 0;
+        int[][] moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}};
+        int[][] flipList = new int[6][6];
 
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row - i, column)) {
-                if (board[row - i][column] == opponent) {
-                    flipList[row - i][column] = 1;
-                    if (checkWithinBorder(row - i - 1, column)) {
-                        if (board[row - i - 1][column] == player) {
-                            flipPiece(flipList);
+        for (dir = 0; dir < 8; dir++) {
+            for (int i = 1; i < 6; i++) {
+                if (checkWithinBorder(row + (i * moveDirList[dir][0]), column + (i * moveDirList[dir][1]))) {
+                    if (board[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] == opponent) {
+                        flipList[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] = 1;
+                        if (checkWithinBorder(row + (i * moveDirList[dir][0]) + moveDirList[dir][0], column + (i * moveDirList[dir][1]) + moveDirList[dir][1])) {
+                            if (board[row + (i * moveDirList[dir][0]) + moveDirList[dir][0]][column + (i * moveDirList[dir][1]) + moveDirList[dir][1]] == player) {
+                                flipPiece(flipList);
+                                break;
+                            }
+                        } else
                             break;
-                        }
-                    } else
+                    } else {
                         break;
+                    }
                 } else
                     break;
-            } else
-                break;
-        }
-        for (int i = 1; i < 6; i++) {
+            }
             flipList = new int[6][6];
-            if (checkWithinBorder(row - i, column - i)) {
-                if (board[row - i][column - i] == opponent) {
-                    flipList[row - i][column - i] = 1;
-                    if (checkWithinBorder(row - i - 1, column - i - 1)) {
-                        if (board[row - i - 1][column - i - 1] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
         }
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row - i, column + i)) {
-                if (board[row - i][column + i] == opponent) {
-                    flipList[row - i][column + i] = 1;
-                    if (checkWithinBorder(row - i - 1, column + i + 1)) {
-                        if (board[row - i - 1][column + i + 1] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
-        }
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row + i, column)) {
-                if (board[row + i][column] == opponent) {
-                    flipList[row + i][column] = 1;
-                    if (checkWithinBorder(row + i + 1, column)) {
-                        if (board[row + i + 1][column] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
-        }
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row + i, column - i)) {
-                if (board[row + i][column - i] == opponent) {
-                    flipList[row + i][column - i] = 1;
-                    if (checkWithinBorder(row + i + 1, column - i - 1)) {
-                        if (board[row + i + 1][column - i - 1] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
-        }
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row + i, column + i)) {
-                if (board[row + i][column + i] == opponent) {
-                    flipList[row + i][column + i] = 1;
-                    if (checkWithinBorder(row + i + 1, column + i + 1)) {
-                        if (board[row + i + 1][column + i + 1] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
-        }
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row, column - i)) {
-                if (board[row][column - i] == opponent) {
-                    flipList[row][column - i] = 1;
-                    if (checkWithinBorder(row, column - i - 1)) {
-                        if (board[row][column - i - 1] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
-        }
-        for (int i = 1; i < 6; i++) {
-            flipList = new int[6][6];
-            if (checkWithinBorder(row, column + i)) {
-                if (board[row][column + i] == opponent) {
-                    flipList[row][column + i] = 1;
-                    if (checkWithinBorder(row, column + i + 1)) {
-                        if (board[row][column + i + 1] == player) {
-                            flipPiece(flipList);
-                            break;
-                        }
-                    } else
-                        break;
-                } else
-                    break;
-            } else
-                break;
-        }
+    }
 
+    private int[][] getValidMoveList() {
+        int[][] moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}};
+        int[][] validList = new int[6][6];
+
+        for (int row = 0; row < board.length; row++) {
+            for (int column = 0; column < board[row].length; column++) {
+                if (checkIsEmpty(row, column)) {
+                    for (int dir = 0; dir < 8; dir++) {
+                        for (int i = 1; i < 6; i++) {
+                            if (checkWithinBorder(row + (i * moveDirList[dir][0]), column + (i * moveDirList[dir][1]))) {
+                                if (board[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] == opponent) {
+                                    if (checkWithinBorder(row + (i * moveDirList[dir][0]) + moveDirList[dir][0], column + (i * moveDirList[dir][1]) + moveDirList[dir][1])) {
+                                        if (board[row + (i * moveDirList[dir][0]) + moveDirList[dir][0]][column + (i * moveDirList[dir][1]) + moveDirList[dir][1]] == player) {
+                                            validList[row][column] = 1;
+                                            break;
+                                        }
+                                    } else
+                                        break;
+                                } else {
+                                    break;
+                                }
+                            } else
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        return validList;
     }
 
     private void flipPiece(int[][] flipList) {
@@ -285,7 +205,7 @@ public class GameBoard {
                     board[row][column] = player;
     }
 
-    public void changePlayer() {
+    private void changePlayer() {
         if (player == 1) {
             player = 2;
             opponent = 1;
@@ -293,147 +213,5 @@ public class GameBoard {
             player = 1;
             opponent = 2;
         }
-    }
-
-    public int[][] getValidMoveList() {
-
-        //A 2d array to store the valid move
-        int[][] validList = new int[6][6];
-
-        //Loop through the board array
-        for (int row = 0; row < board.length; row++) {
-            for (int column = 0; column < board[row].length; column++) {
-
-                //Move in a direction, up to 5 blocks away (board size 6x6)
-                for (int i = 1; i < 6; i++) {
-
-                    //Move Up "i" number of blocks, check if still inside game board
-                    if (checkWithinBorder(row - i, column)) {
-
-                        //Check if there are opponent pieces follow by one of your piece at the end
-                        if (board[row - i][column] == opponent) {
-                            if (checkWithinBorder(row - i - 1, column)) {
-                                if (board[row - i - 1][column] == player && checkIsEmpty(row, column)) {
-
-                                    //Save this as a valid move to the list
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row - i, column - i)) {
-                        if (board[row - i][column - i] == opponent) {
-                            if (checkWithinBorder(row - i - 1, column - i - 1)) {
-                                if (board[row - i - 1][column - i - 1] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row - i, column + i)) {
-                        if (board[row - i][column + i] == opponent) {
-                            if (checkWithinBorder(row - i - 1, column + i + 1)) {
-                                if (board[row - i - 1][column + i + 1] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row + i, column)) {
-                        if (board[row + i][column] == opponent) {
-                            if (checkWithinBorder(row + i + 1, column)) {
-                                if (board[row + i + 1][column] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row + i, column - i)) {
-                        if (board[row + i][column - i] == opponent) {
-                            if (checkWithinBorder(row + i + 1, column - i - 1)) {
-                                if (board[row + i + 1][column - i - 1] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row + i, column + i)) {
-                        if (board[row + i][column + i] == opponent) {
-                            if (checkWithinBorder(row + i + 1, column + i + 1)) {
-                                if (board[row + i + 1][column + i + 1] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row, column - i)) {
-                        if (board[row][column - i] == opponent) {
-                            if (checkWithinBorder(row, column - i - 1)) {
-                                if (board[row][column - i - 1] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-                for (int i = 1; i < 6; i++) {
-                    if (checkWithinBorder(row, column + i)) {
-                        if (board[row][column + i] == opponent) {
-                            if (checkWithinBorder(row, column + i + 1)) {
-                                if (board[row][column + i + 1] == player && checkIsEmpty(row, column)) {
-                                    validList[row][column] = 1;
-                                    break;
-                                }
-                            } else
-                                break;
-                        } else
-                            break;
-                    } else
-                        break;
-                }
-
-            }
-        }
-        return validList;
     }
 }
