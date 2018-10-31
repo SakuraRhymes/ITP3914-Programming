@@ -40,7 +40,7 @@ public class GameBoard {
     public void drawGameBoard() {
 
         //Print the first two lines
-        System.out.print("   ");
+        System.out.print("\n   ");
         for (int i = 0; i < board.length; i++)
             //Print column index
             System.out.print(" " + i);
@@ -91,10 +91,9 @@ public class GameBoard {
                     player2Pieces++;
             }
 
-        while (checkSkipTurn(validList)) {
+        while (checkSkipTurn()) {
             changePlayer();
             validList = getValidMoveList();
-            skippedTurn++;
             if (skippedTurn == 2) {
                 endGame();
                 return true;
@@ -121,7 +120,7 @@ public class GameBoard {
             System.out.println("Drawn game.");
     }
 
-    private boolean checkSkipTurn(int[][] validList) {
+    private boolean checkSkipTurn() {
         int validMoves = 0;
 
         for (int row = 0; row < validList.length; row++)
