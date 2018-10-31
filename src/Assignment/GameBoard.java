@@ -8,6 +8,7 @@ public class GameBoard {
     private int player1Pieces;
     private int player2Pieces;
     private int skippedTurn;
+    private int[][] moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}};
 
     public GameBoard() {
         player = 1;
@@ -141,7 +142,6 @@ public class GameBoard {
 
     private void flipPiece(int row, int column) {
         int dir = 0;
-        int[][] moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}};
         int[][] flipList = new int[6][6];
 
         for (dir = 0; dir < 8; dir++) {
@@ -167,7 +167,6 @@ public class GameBoard {
     }
 
     private int[][] getValidMoveList() {
-        int[][] moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}};
         int[][] validList = new int[6][6];
 
         for (int row = 0; row < board.length; row++) {
