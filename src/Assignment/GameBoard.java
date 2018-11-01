@@ -36,6 +36,7 @@ public class GameBoard {
         board[3][2] = 2;
         board[3][3] = 1;
 
+        //Generate a list of valid moves the current player can make
         validList = getValidMoveList();
     }
 
@@ -92,7 +93,7 @@ public class GameBoard {
             return false;
         }
 
-        //Set the inputted piece
+        //Place the inputted piece
         board[row][column] = player;
         flipPiece(row, column);
         changePlayer();
@@ -137,7 +138,7 @@ public class GameBoard {
     }
 
     //Display how many pieces each player have, and who is the winner
-    //If both player have the same pieces, the game is drawn
+    //If both player have the same number of pieces, the game is drawn
     private void endGame() {
         System.out.println("Game Finishes.");
         System.out.println("\t'1' - " + player1Pieces);
@@ -152,15 +153,17 @@ public class GameBoard {
 
     //Return true if no valid move can be made by the current player
     private boolean checkSkipTurn() {
+
+        //Count the number of valid moves
         int validMoves = 0;
 
-        //Check through the valid move list and count there are how many valid moves
+        //Check through the valid move list and count the number of valid moves
         for (int row = 0; row < validList.length; row++)
             for (int column = 0; column < validList[row].length; column++)
                 if (validList[row][column] == 1)
                     validMoves++;
 
-        //If no valid can be found, the counter goes up by 1
+        //If no valid can be found, the skippedTurn counter goes up by 1
         if (validMoves == 0) {
             skippedTurn++;
             return true;
@@ -168,12 +171,12 @@ public class GameBoard {
             return false;
     }
 
-    //Your every day System.out.print
+    //Your every day System.out.print for asking player input
     public void askInput() {
         System.out.print("Please enter the position of '" + player + "':");
     }
 
-    //Check which pieces need to be flip, and pass a list to the overload method
+    //Check which pieces need to be flip, and pass the list to the overload method
     private void flipPiece(int row, int column) {
 
         //A list to store what need to be flip
@@ -200,8 +203,8 @@ public class GameBoard {
                         flipList[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] = 1;
 
                         //Check if the next piece is one of current player's piece
-                        if (checkWithinBorder(row + (i * moveDirList[dir][0]) + moveDirList[dir][0], column + (i * moveDirList[dir][1]) + moveDirList[dir][1])) {
-                            if (board[row + (i * moveDirList[dir][0]) + moveDirList[dir][0]][column + (i * moveDirList[dir][1]) + moveDirList[dir][1]] == player) {
+                        if (checkWithinBorder(row + ((i + 1) * moveDirList[dir][0]), column + ((i + 1) * moveDirList[dir][1]))) {
+                            if (board[row + ((i + 1) * moveDirList[dir][0])][column + ((i + 1) * moveDirList[dir][1])] == player) {
 
                                 //If it is a valid move, Send the list to flip method
                                 flipPiece(flipList);
@@ -263,8 +266,8 @@ public class GameBoard {
                                 if (board[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] == opponent) {
 
                                     //Check if the next piece is one of current player's piece
-                                    if (checkWithinBorder(row + (i * moveDirList[dir][0]) + moveDirList[dir][0], column + (i * moveDirList[dir][1]) + moveDirList[dir][1])) {
-                                        if (board[row + (i * moveDirList[dir][0]) + moveDirList[dir][0]][column + (i * moveDirList[dir][1]) + moveDirList[dir][1]] == player) {
+                                    if (checkWithinBorder(row + ((i + 1) * moveDirList[dir][0]), column + ((i + 1) * moveDirList[dir][1]))) {
+                                        if (board[row + ((i + 1) * moveDirList[dir][0])][column + ((i + 1) * moveDirList[dir][1])] == player) {
 
                                             //Store it to the valid moves list
                                             validList[row][column] = 1;
