@@ -10,7 +10,7 @@ package Assignment;
 public class GameBoard {
     private int[][] board;  //The main game board array
     private int[][] validList;  //Store the valid moves that the current player can make
-    private int player;     //Can be 1 or 2 to represent the current player, switch alternatively after a valid move
+    private int currentPlayer;  //Can be 1 or 2 to represent the current player, switch alternatively after a valid move
     private int opponent;   //Represent the opponent, opposite to the current player
     private int player1Pieces;  //How many pieces player one have on the board
     private int player2Pieces;  //How many pieces player two have on the board
@@ -21,13 +21,13 @@ public class GameBoard {
 
     //Constructor
     public GameBoard() {
-        player = 1;
+        currentPlayer = 1;
         opponent = 2;
         skippedTurn = 0;
         player1Pieces = 0;
         player2Pieces = 0;
 
-        //Game board size can vary, up to 100x100
+        //Game board size can vary, up to 100x100 (kinda)
         board = new int[6][6];
 
         //Fill in the middle 4 pieces on the game board.
@@ -56,6 +56,7 @@ public class GameBoard {
         //Print the first two lines
         System.out.print("\n    ");
         for (int i = 0; i < board.length; i++)
+
             //Print column index
             System.out.printf("%2d", i);
 
@@ -65,18 +66,20 @@ public class GameBoard {
             System.out.print("--");
         }
 
-        //Display the game board array
         for (int row = 0; row < board.length; row++) {
             System.out.println();
+
             //Print row index
             System.out.printf("%2d |", row);
+
+            //Print the game board array
             for (int column = 0; column < board[row].length; column++)
                 System.out.print(" " + board[row][column]);
         }
         System.out.println("\n");
     }
 
-    //First check if the input is valid, then place and flip pieces accordingly
+    //First check if the input is valid, then call flipPiece() to place and flip pieces accordingly
     //After a successful move, change to next player's turn, return true
     //Display a error message if a move is not valid, return false
     public boolean setPiece(int row, int column) {
@@ -94,13 +97,15 @@ public class GameBoard {
         }
 
         //Place the inputted piece
-        board[row][column] = player;
+        board[row][column] = currentPlayer;
         flipPiece(row, column);
+
         changePlayer();
         return true;
     }
 
     //Check if the game should continue, end, skip turn etc.
+    //Return true if the game is over, breaking the main game loop.
     public boolean checkGameStatus() {
         player1Pieces = 0;
         player2Pieces = 0;
@@ -163,7 +168,8 @@ public class GameBoard {
                 if (validList[row][column] == 1)
                     validMoves++;
 
-        //If no valid can be found, the skippedTurn counter goes up by 1
+        //If no valid moves can be found, the skippedTurn counter goes up by 1
+        //If two consecutive turn is skipped, the game end
         if (validMoves == 0) {
             skippedTurn++;
             return true;
@@ -173,10 +179,10 @@ public class GameBoard {
 
     //Your every day System.out.print for asking player input
     public void askInput() {
-        System.out.print("Please enter the position of '" + player + "':");
+        System.out.print("Please enter the position of '" + currentPlayer + "':");
     }
 
-    //Check which pieces need to be flip, and pass the list to the overload method
+    //Check which pieces need to be flip, and pass a list to the overload method flipPiece() to do the flipping
     private void flipPiece(int row, int column) {
 
         //A list to store what need to be flip
@@ -187,24 +193,24 @@ public class GameBoard {
         for (int dir = 0; dir < 8; dir++) {
 
             //How far to move in a direction, max is board size - 1
-            //i is use to count the number of steps
-            for (int i = 1; i < board.length; i++) {
+            //steps is use to count the number of steps to move
+            for (int steps = 1; steps < board.length; steps++) {
 
                 //Check if the next piece is still within border
                 //moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}}
-                //row + "Number of steps(i=1)" * "Which direction to move([dir=0][0]=1)" mean move down one row
-                //column + "Number of steps(i=1)" * "Which direction to move([dir=0][1]=0)" mean column stay the same
-                if (checkWithinBorder(row + (i * moveDirList[dir][0]), column + (i * moveDirList[dir][1]))) {
+                //row + "Number of steps (1)" * "Which direction to move (moveDirList[dir=0][0] = 1)" means move down one row
+                //column + "Number of steps (1)" * "Which direction to move (moveDirList[dir=0][1] = 0)" means column stay the same
+                if (checkWithinBorder(row + (steps * moveDirList[dir][0]), column + (steps * moveDirList[dir][1]))) {
 
                     //Check if it is a opponent pieces
-                    if (board[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] == opponent) {
+                    if (board[row + (steps * moveDirList[dir][0])][column + (steps * moveDirList[dir][1])] == opponent) {
 
                         //Store it to a list of pieces needed to be flip
-                        flipList[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] = 1;
+                        flipList[row + (steps * moveDirList[dir][0])][column + (steps * moveDirList[dir][1])] = 1;
 
                         //Check if the next piece is one of current player's piece
-                        if (checkWithinBorder(row + ((i + 1) * moveDirList[dir][0]), column + ((i + 1) * moveDirList[dir][1]))) {
-                            if (board[row + ((i + 1) * moveDirList[dir][0])][column + ((i + 1) * moveDirList[dir][1])] == player) {
+                        if (checkWithinBorder(row + ((steps + 1) * moveDirList[dir][0]), column + ((steps + 1) * moveDirList[dir][1]))) {
+                            if (board[row + ((steps + 1) * moveDirList[dir][0])][column + ((steps + 1) * moveDirList[dir][1])] == currentPlayer) {
 
                                 //If it is a valid move, Send the list to flip method
                                 flipPiece(flipList);
@@ -212,9 +218,8 @@ public class GameBoard {
                             }
                         } else
                             break;
-                    } else {
+                    } else
                         break;
-                    }
                 } else
                     break;
             }
@@ -232,10 +237,10 @@ public class GameBoard {
 
                 //Turn any piece marked in the list to current player's piece
                 if (flipList[row][column] == 1)
-                    board[row][column] = player;
+                    board[row][column] = currentPlayer;
     }
 
-    //Return how many valid move the current player have, if none, this turn will be skipped
+    //Return a list of valid moves the current player have, if none, this turn will be skipped
     private int[][] getValidMoveList() {
 
         //A array to store the valid move
@@ -253,21 +258,21 @@ public class GameBoard {
                     for (int dir = 0; dir < 8; dir++) {
 
                         //How far to move in a direction, max is board size - 1
-                        //i is use to count the number of steps
-                        for (int i = 1; i < board.length; i++) {
+                        //steps is use to count the number of steps to move
+                        for (int steps = 1; steps < board.length; steps++) {
 
                             //Check if the next piece is still within border
                             //moveDirList = {{1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}}
-                            //row + "Number of steps(i=1)" * "Which direction to move([dir=0][0]=1)" mean move down one row
-                            //column + "Number of steps(i=1)" * "Which direction to move([dir=0][1]=0)" mean column stay the same
-                            if (checkWithinBorder(row + (i * moveDirList[dir][0]), column + (i * moveDirList[dir][1]))) {
+                            //row + "Number of steps (1)" * "Which direction to move (moveDirList[dir=0][0] = 1)" means move down one row
+                            //column + "Number of steps (1)" * "Which direction to move (moveDirList[dir=0][1] = 0)" means column stay the same
+                            if (checkWithinBorder(row + (steps * moveDirList[dir][0]), column + (steps * moveDirList[dir][1]))) {
 
                                 //Check if it is a opponent pieces
-                                if (board[row + (i * moveDirList[dir][0])][column + (i * moveDirList[dir][1])] == opponent) {
+                                if (board[row + (steps * moveDirList[dir][0])][column + (steps * moveDirList[dir][1])] == opponent) {
 
                                     //Check if the next piece is one of current player's piece
-                                    if (checkWithinBorder(row + ((i + 1) * moveDirList[dir][0]), column + ((i + 1) * moveDirList[dir][1]))) {
-                                        if (board[row + ((i + 1) * moveDirList[dir][0])][column + ((i + 1) * moveDirList[dir][1])] == player) {
+                                    if (checkWithinBorder(row + ((steps + 1) * moveDirList[dir][0]), column + ((steps + 1) * moveDirList[dir][1]))) {
+                                        if (board[row + ((steps + 1) * moveDirList[dir][0])][column + ((steps + 1) * moveDirList[dir][1])] == currentPlayer) {
 
                                             //Store it to the valid moves list
                                             validList[row][column] = 1;
@@ -275,9 +280,8 @@ public class GameBoard {
                                         }
                                     } else
                                         break;
-                                } else {
+                                } else
                                     break;
-                                }
                             } else
                                 break;
                         }
@@ -290,11 +294,11 @@ public class GameBoard {
 
     //Switch player and opponent
     private void changePlayer() {
-        if (player == 1) {
-            player = 2;
+        if (currentPlayer == 1) {
+            currentPlayer = 2;
             opponent = 1;
         } else {
-            player = 1;
+            currentPlayer = 1;
             opponent = 2;
         }
     }
