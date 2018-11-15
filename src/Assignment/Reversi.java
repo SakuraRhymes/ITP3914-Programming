@@ -18,7 +18,6 @@ public class Reversi {
         //Display the game board
         GameBoard.drawGameBoard();
 
-        //Main game loop
         while (true) {
 
             //Ask the player to enter a move

@@ -1,5 +1,5 @@
 /*
-The main game body for a Java Reversi game
+The game logic for a Java Reversi game
 
 Source File: GameBoard.java
 BY: Wong Hiu Hong  IT114105  180104583
@@ -177,7 +177,7 @@ public class GameBoard {
             return false;
     }
 
-    //Your every day System.out.print for asking player input
+    //Your everyday System.out.print for asking player input
     public void askInput() {
         System.out.print("Please enter the position of '" + currentPlayer + "':");
     }
@@ -230,12 +230,8 @@ public class GameBoard {
 
     //Flip pieces according to the list
     private void flipPiece(int[][] flipList) {
-
-        //Loop through the list array
         for (int row = 0; row < flipList.length; row++)
             for (int column = 0; column < flipList[row].length; column++)
-
-                //Turn any piece marked in the list to current player's piece
                 if (flipList[row][column] == 1)
                     board[row][column] = currentPlayer;
     }
