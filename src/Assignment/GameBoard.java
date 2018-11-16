@@ -186,7 +186,7 @@ public class GameBoard {
     private void flipPiece(int row, int column) {
 
         //A list to store what need to be flip
-        int[][] flipList = new int[6][6];
+        int[][] flipList = new int[board.length][board[0].length];
 
         //Check in all 8 direction
         //dir is use to represent direction 0 - 7
