@@ -15,6 +15,6 @@ public class CylinderGUI {
 
         v = r * r * (Math.PI) * l;
 
-        JOptionPane.showMessageDialog(null, "The volume of the cylinder with radius = " + r + " and length = " + l + " is " + v + ".");
+        JOptionPane.showMessageDialog(null, "The volume of the cylinder with\nradius = " + r + " and length = " + l + "\nis " + v + ".");
     }
 }
