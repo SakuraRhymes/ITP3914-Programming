@@ -8,10 +8,10 @@ public class CylinderGUI {
         String input;
 
         input = JOptionPane.showInputDialog(null, "Enter the radius:");
-        r = Integer.parseInt(input);
+        r = Double.parseDouble(input);
 
         input = JOptionPane.showInputDialog(null, "Enter the length:");
-        l = Integer.parseInt(input);
+        l = Double.parseDouble(input);
 
         v = r * r * (Math.PI) * l;
 
