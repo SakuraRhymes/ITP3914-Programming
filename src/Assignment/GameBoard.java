@@ -150,7 +150,7 @@ public class GameBoard {
         System.out.println("\t'2' - " + player2Pieces);
         if (player1Pieces > player2Pieces)
             System.out.println("Black wins.");
-        if (player1Pieces < player2Pieces)
+        else if (player1Pieces < player2Pieces)
             System.out.println("White wins.");
         else
             System.out.println("Drawn game.");
